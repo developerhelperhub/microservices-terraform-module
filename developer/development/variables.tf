@@ -16,3 +16,9 @@ variable "grafana_domain_name" {
     default = "grafana.microservices.com"
 }
 
+variable "keycloak_domain_name" {
+    type = string
+    description = "Keycloak domain name"
+    default = "keycloak.myapp.com"
+}
+

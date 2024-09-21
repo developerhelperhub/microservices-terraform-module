@@ -2,16 +2,14 @@
 These Terraform scripts help set up Microservices applications necessary for application development. The module is hosted in a GitHub repository called ["Microservices Terraform Module."](https://github.com/developerhelperhub/microservices-terraform-module).
 
 The following applications will be deployed locally in a Kubernetes cluster.
-* Jenkins
-* JFrog
+* Keycloak
 * Prometheus
 * Grafana
-* Jenkins Maven Agent Config
 
 **Root Main Terraform Script** `main.tf`
 ```shell
 module "microservices" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=v1.0.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=v1.1.0"
 
   kind_cluster_name = var.kind_cluster_name
   kind_http_port    = 80
@@ -19,13 +17,12 @@ module "microservices" {
 
   kubernetes_namespace = "microservices"
 
-  jenkins_enable         = true
-  jenkins_domain_name    = var.jenkins_domain_name
-  jenkins_admin_username = var.jenkins_admin_username
-  jenkins_admin_password = "MyPassword12920"
+  keycloak_enable      = true
+  keycloak_domain_name = var.keycloak_domain_name
 
-  jfrog_enable              = true
-  jfrog_domain_name         = var.jfrog_domain_name
+  keycloak_admin_user       = "admin"
+  keycloak_admin_password   = "MyPassword2222@"
+  keycloak_persistence_size = "5Gi"
 
   kube_prometheus_stack_enable = false
   prometheus_domain_name       = var.prometheus_domain_name
@@ -35,20 +32,6 @@ module "microservices" {
   prometheus_alertmanager_enabled      = true
   prometheus_persistent_volume_enabled = true
   prometheus_persistent_volume_size    = "5Gi"
-
-  jenkins_agent_maven_config_enabled = true
-  jenkins_agent_maven_config_pvc_storage_size = "5Gi"
-  jenkins_agent_maven_config_pv_storage_size = "5Gi"
-
-  jenkins_agent_maven_config_app_repository_id="my-app-virtual-snapshot"
-  jenkins_agent_maven_config_app_repository_url="http://jfrog-artifactory-oss.microservices.svc.cluster.local:8081/artifactory/my-app-virtual-snapshot/"
-  jenkins_agent_maven_config_app_repository_username=var.jenkins_agent_maven_config_app_repository_username
-  jenkins_agent_maven_config_app_repository_password=var.jenkins_agent_maven_config_app_repository_password
-  jenkins_agent_maven_config_app_central_repository_id="my-app-central-snapshot"
-  jenkins_agent_maven_config_app_central_repository_url="http://jfrog-artifactory-oss.microservices.svc.cluster.local:8081/artifactory/my-app-central-snapshot"
-  jenkins_agent_maven_config_app_central_repository_username=var.jenkins_agent_maven_config_app_central_repository_username
-  jenkins_agent_maven_config_app_central_repository_password=var.jenkins_agent_maven_config_app_central_repository_password
-  jenkins_agent_maven_config_maven_master_password=var.jenkins_agent_maven_config_maven_master_password
 }
 ```
 
@@ -68,43 +51,29 @@ git https://github.com/developerhelperhub/microservices-terraform-module.git
 cd developer/development/
 ```
 
-**Configure the Environment variables of Maven Secretes for Maven Agent Config Module**
-Following the environments variables need to configure in the `~/.bash_profile`, give the proper encrypted password and user names in the variables
-```shell
-export set TF_VAR_jenkins_agent_maven_config_app_repository_username="<user>"
-export set TF_VAR_jenkins_agent_maven_config_app_repository_password="<password>"
-export set TF_VAR_jenkins_agent_maven_config_app_central_repository_username="<user>"
-export set TF_VAR_jenkins_agent_maven_config_app_central_repository_password="<password>"
-export set TF_VAR_jenkins_agent_maven_config_maven_master_password="<maven master password>"
-```
-
 Run the following commands to install the resources
 ```shell
 terraform init
-terraform plan -var="kind_cluster_name=microservices-test-cluster"
-terraform apply -var="kind_cluster_name=microservices-test-cluster"
+terraform plan  -var="kind_cluster_name=microservices-development-cluster"
+terraform apply  -var="kind_cluster_name=microservices-development-cluster"
 ```
 
 **Note:** The Terraform state file should be kept secure and encrypted (using encryption at rest) because it contains sensitive information, such as usernames, passwords, and Kubernetes cluster details etc.
 
-Add our domain to the bottom of the `/etc/hosts` file on your local machine. This configuration should not be inside our working Linux box “test-jenkins-module-envornment-box”; it should be applied to your personal machine's `/etc/hosts` file. 
+Add our domain to the bottom of the `/etc/hosts` file on your local machine. This configuration should not be inside our working Linux box “test-microservices-module-envornment-box”; it should be applied to your personal machine's `/etc/hosts` file. 
 (you will need administrator access):
 ```shell
-127.0.0.1       jenkins.microservices.com
-127.0.0.1       jfrog.microservices.com
 127.0.0.1       prometheus.microservices.com
 127.0.0.1       grafana.microservices.com
+127.0.0.1       keycloak.myapp.com
 ```
 ## Applications 
-* Jenkins Username and password will be available in the Terraform state file, URL “http://jenkins.microservices.com/”
-* JFrog username and password are "admin" and "password", URL “http://jfrog.microservices.com/”
+* Keycloak Username is "admin" and password "MyPassword2222@", URl "http://keycloak.myapp.com"
 * Prometheus URL “http://prometheus.microservices.com/”
 * Grafana Username is "admin", password will be available in the Terraform state file, URL “http://grafana.microservices.com/”
 
 
 ## Reference
 * [Maintain Module Version](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00004)
-* [Jfrog Deployment in Kubernetes](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00005)
-* [Module Design Jenkins Deployment in Kubernetes](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00003)
-* [Setup Terraform - Jenkins](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00002)
 * [Setup Kubernetes Cluster on Docker with help of Kind](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00001)
+* [Keycloak setup with helm](https://github.com/developerhelperhub/kuberentes-help/tree/main/kubenretes/tutorials/sections/0011)

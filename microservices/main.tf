@@ -1,6 +1,6 @@
 #Installing the cluster in Docker
 module "kind_cluster" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=v1.0.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=v1.1.0"
 
   name       = var.kind_cluster_name
   http_port  = 80
@@ -19,7 +19,7 @@ provider "kubernetes" {
 
 #Installing the ingress controller in the cluster, this ingress support by kind. This ingress controller will be different based on the clusters such as AWS, Azure, Etc.
 module "kind_ingress" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=v1.0.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=v1.1.0"
 
   kube_endpoint               = module.kind_cluster.endpoint
   kube_client_key             = module.kind_cluster.client_key
@@ -41,7 +41,7 @@ provider "helm" {
 
 #Installing the namespace in the Kuberenetes cluster
 module "kubernetes_namespace" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=v1.0.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=v1.1.0"
 
   namespace_name = var.kubernetes_namespace
 
@@ -50,7 +50,7 @@ module "kubernetes_namespace" {
 
 #Instaling common modules
 module "common" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/common?ref=v1.0.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/common?ref=v1.1.0"
 }
 
 #This resource is designed to generate a password across the system to enhance security. It can be used to create passwords for users, ensuring that each password includes special characters, uppercase and lowercase letters, and default numbers. You can also specify which special characters should be included in the password.
@@ -63,9 +63,28 @@ resource "random_password" "microservices_random_service_passwords" {
   override_special = "#$%&" # Only these special characters are allowed
 }
 
+
+#Instaling the keycloak
+module "keycloak" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=v1.1.0"
+
+  keycloak_enable      = var.keycloak_enable
+  kubernetes_namespace = module.kubernetes_namespace.namespace
+
+  service_port = var.keycloak_service_port
+  domain_name  = var.keycloak_domain_name
+
+  admin_user     = var.keycloak_admin_user
+  admin_password = var.keycloak_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["keycloak_password"].result : var.keycloak_admin_password
+
+  persistence_size = var.keycloak_persistence_size
+
+  depends_on = [module.kubernetes_namespace]
+}
+
 #Instaling the kube-prometheus-stack
 module "kube_prometheus_stack" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=v1.0.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=v1.1.0"
 
   kube_prometheus_stack_enable = var.kube_prometheus_stack_enable
   kubernetes_namespace         = module.kubernetes_namespace.namespace
