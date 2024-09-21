@@ -63,6 +63,25 @@ resource "random_password" "microservices_random_service_passwords" {
   override_special = "#$%&" # Only these special characters are allowed
 }
 
+
+#Instaling the keycloak
+module "keycloak" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=dev"
+
+  keycloak_enable      = var.keycloak_enable
+  kubernetes_namespace = module.kubernetes_namespace.namespace
+
+  service_port = var.keycloak_service_port
+  domain_name  = var.keycloak_domain_name
+
+  admin_user     = var.keycloak_admin_user
+  admin_password = var.keycloak_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["keycloak_password"].result : var.keycloak_admin_password
+
+  persistence_size = var.keycloak_persistence_size
+
+  depends_on = [module.kubernetes_namespace]
+}
+
 #Instaling the kube-prometheus-stack
 module "kube_prometheus_stack" {
   source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=dev"

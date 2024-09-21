@@ -8,7 +8,8 @@ variable "microservices_service_passwords" {
   }))
 
   default = {
-    "grafana_password"         = { length = 16, special = true, upper = true, lower = true }
+    "grafana_password"  = { length = 16, special = true, upper = true, lower = true }
+    "keycloak_password" = { length = 16, special = true, upper = true, lower = true }
   }
 }
 
@@ -36,6 +37,44 @@ variable "kubernetes_namespace" {
   type        = string
   description = "Resources are installing in the Kubernetes namespace"
 }
+
+# -------------- Keycloak ----------------
+
+variable "keycloak_enable" {
+  type        = bool
+  description = "Enable the installation"
+  default     = false
+}
+
+variable "keycloak_service_port" {
+  type        = number
+  description = "Service port"
+  default     = 80
+}
+
+variable "keycloak_domain_name" {
+  type        = string
+  description = "Domain name of service"
+}
+
+variable "keycloak_admin_user" {
+  type        = string
+  description = "Admin username"
+  default = "admin"
+}
+
+variable "keycloak_admin_password" {
+  type        = string
+  description = "Admin password"
+  default     = "AUTO_GENERATED"
+}
+
+variable "keycloak_persistence_size" {
+  type        = string
+  description = "Presistance size"
+  default     = "8Gi"
+}
+
 
 # -------------- Kube Prometheus Stack ----------------
 
@@ -70,7 +109,7 @@ variable "grafana_domain_name" {
 variable "grafana_admin_password" {
   type        = string
   description = "Grafana admin password"
-  default = "AUTO_GENERATED"
+  default     = "AUTO_GENERATED"
 }
 
 variable "prometheus_alertmanager_enabled" {
