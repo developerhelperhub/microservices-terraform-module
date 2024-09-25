@@ -21,7 +21,7 @@ We easily use to “microservices” module to setup resources inside the Kubern
 `main.tf` terraform script
 ```shell
 module "microservices" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=v1.1.0"
 
   kind_cluster_name = var.kind_cluster_name
   kind_http_port    = 80
@@ -63,7 +63,7 @@ We easily use to “kind” module to setup create the cluster in docker contain
 ```shell
 #Installing the cluster in Docker
 module "kind_cluster" {
-    source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=dev"
+    source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=v1.1.0"
     name = 'test-my-cluster'
     http_port = 80
     https_port = 443
@@ -77,7 +77,7 @@ We easily use to “kind ingress” module to install ingress the controller in 
 ```shell
 #Installing the ingress controller in the cluster, this ingress support by kind. This ingress controller will be different based on the clusters such as AWS, Azure, Etc.
 module "kind_ingress" {
-    source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=dev"
+    source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=v1.1.0"
     kube_endpoint = module.kind_cluster.endpoint
     kube_client_key = module.kind_cluster.client_key
     kube_client_certificate = module.kind_cluster.client_certificate
@@ -124,7 +124,7 @@ We easily use to “kubernetes namespace” module to create the namespace Kuber
 ```shell
 #Installing the namespace in the Kuberenetes cluster
 module "kubernetes_namespace" {
-    source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=dev"
+    source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=v1.1.0"
     namespace_name = 'microservices'
     depends_on = [module.kind_ingress]
 }
@@ -139,7 +139,7 @@ We easily use to keycloak module to install the Keycloak inside Kubernetes names
 ```shell
 #Instaling the keycloak
 module "keycloak" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=v1.1.0"
 
   keycloak_enable      = var.keycloak_enable
   kubernetes_namespace = module.kubernetes_namespace.namespace
@@ -175,7 +175,7 @@ We easily use to kube-prometheus-stack module to install the Kube Prometheus Sta
 ```shell
 #Instaling the kube-prometheus-stack
 module "kube_prometheus_stack" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=v1.1.0"
 
   kube_prometheus_stack_enable = var.kube_prometheus_stack_enable
   kubernetes_namespace         = module.kubernetes_namespace.namespace
