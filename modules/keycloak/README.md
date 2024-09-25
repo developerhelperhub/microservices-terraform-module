@@ -9,6 +9,12 @@ OAuth2 and OpenID Connect Support: Supports modern authentication protocols, all
 Multitenancy: Keycloak supports multi-realm environments where each realm can manage its own user base, clients, and roles.
 Keycloak is typically used in environments where there’s a need to manage identity, provide secure login, and integrate with various authentication protocols.
 
+**Login into postgresql**
+```shell
+kubectl -n microservices exec -it pod/keycloak-postgresql-0 -- psql -U keycloak -d keycloakdb
+```
+
 ## Reference
 * (Keycloak install on Kubernetes cluaster)[https://github.com/developerhelperhub/kuberentes-help/tree/main/kubenretes/tutorials/sections/0011]
 * (Helm Value)[https://github.com/bitnami/charts/blob/main/bitnami/keycloak/values.yaml]
+* (Helm Keycloak example)[https://analytics.axxonet.com/keycloak-deployment-on-kubernetes-with-helm-charts-using-an-external-postgresql-database/]

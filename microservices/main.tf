@@ -77,7 +77,18 @@ module "keycloak" {
   admin_user     = var.keycloak_admin_user
   admin_password = var.keycloak_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["keycloak_password"].result : var.keycloak_admin_password
 
-  persistence_size = var.keycloak_persistence_size
+  resources_requests_cpu    = var.keycloak_resources_requests_cpu
+  resources_requests_memory = var.keycloak_resources_requests_memory
+  resources_limit_cpu       = var.keycloak_resources_limit_cpu
+  resources_limit_memory    = var.keycloak_resources_limit_memory
+  db_user                   = var.keycloak_db_user
+  db_password               = var.keycloak_db_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["keycloak_postgres_user_password"].result : var.keycloak_db_password
+  db_name                   = var.keycloak_db_name
+  db_port                   = var.keycloak_db_port
+  autoscaling_min_replicas  = var.keycloak_autoscaling_min_replicas
+  autoscaling_max_replicas  = var.keycloak_autoscaling_max_replicas
+  persistence_size          = var.keycloak_persistence_size
+  db_admin_password         = var.keycloak_db_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["keycloak_postgres_admin_user_password"].result : var.keycloak_db_admin_password
 
   depends_on = [module.kubernetes_namespace]
 }

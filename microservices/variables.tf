@@ -10,6 +10,8 @@ variable "microservices_service_passwords" {
   default = {
     "grafana_password"  = { length = 16, special = true, upper = true, lower = true }
     "keycloak_password" = { length = 16, special = true, upper = true, lower = true }
+    "keycloak_postgres_user_password" = { length = 16, special = true, upper = true, lower = true }
+    "keycloak_postgres_admin_user_password" = { length = 16, special = true, upper = true, lower = true }
   }
 }
 
@@ -55,6 +57,7 @@ variable "keycloak_service_port" {
 variable "keycloak_domain_name" {
   type        = string
   description = "Domain name of service"
+  default = "localhost"
 }
 
 variable "keycloak_admin_user" {
@@ -69,10 +72,77 @@ variable "keycloak_admin_password" {
   default     = "AUTO_GENERATED"
 }
 
+
+variable "keycloak_resources_requests_cpu" {
+  type        = string
+  description = "Requested cpu size"
+  default     = "500m"
+}
+
+variable "keycloak_resources_requests_memory" {
+  type        = string
+  description = "Requested memory size"
+  default     = "1024Mi"
+}
+
+variable "keycloak_resources_limit_cpu" {
+  type        = string
+  description = "Limit cpu size"
+  default     = "500m"
+}
+
+variable "keycloak_resources_limit_memory" {
+  type        = string
+  description = "Limit memory size"
+  default     = "1024Mi"
+}
+
+variable "keycloak_db_user" {
+  type        = string
+  description = "Database username"
+  default     = "keycloak"
+}
+
+variable "keycloak_db_password" {
+  type        = string
+  description = "Database password"
+  default = "AUTO_GENERATED"
+}
+
+variable "keycloak_db_name" {
+  type        = string
+  description = "Database name"
+  default     = "keycloakdb"
+}
+
+variable "keycloak_db_port" {
+  type        = number
+  description = "Database port"
+  default     = 5432
+}
+
+variable "keycloak_autoscaling_min_replicas" {
+  type        = number
+  description = "Minimum auto scalign replicas"
+  default     = 1
+}
+
+variable "keycloak_autoscaling_max_replicas" {
+  type        = number
+  description = "Maximum auto scalign replicas"
+  default     = 1
+}
+
 variable "keycloak_persistence_size" {
   type        = string
   description = "Presistance size"
   default     = "8Gi"
+}
+
+variable "keycloak_db_admin_password" {
+  type        = string
+  description = "Database admin password"
+  default = "AUTO_GENERATED"
 }
 
 
@@ -93,6 +163,7 @@ variable "prometheus_service_port" {
 variable "prometheus_domain_name" {
   type        = string
   description = "Prometheus domain name"
+  default = "localhost"
 }
 
 variable "grafana_service_port" {
@@ -104,6 +175,7 @@ variable "grafana_service_port" {
 variable "grafana_domain_name" {
   type        = string
   description = "Grafana Domain name"
+  default = "localhost"
 }
 
 variable "grafana_admin_password" {
