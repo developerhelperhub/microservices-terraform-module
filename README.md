@@ -11,6 +11,7 @@ This is terraform module repository to maintain the version microservice related
 | Setup the Kubernetes Namespace    | This module is used to manage Kubernetes namespace-related resources, providers.                                                                                                                                                                                                                                                                            |
 | Setup the common module           | This module is used to manage the common resources and providers needed in the root and child modules of "microservice." In this example, we are using the "random_password" resource to generate a password for Grafana, Keycloak, etc.                                                                                                                                         |
 | Setup the Keycloak                 | This module is used to manage Keycloak resources, providers and Kubernetes ingress configuration. The Helm Keycloak support version 22.2.3                                                                                                                                                                                                            |
+| Setup the Kong API Gateway                 | This module is used to manage Kong API Gateway resources, providers and Kubernetes ingress configuration. The Helm Kong support version 2.41.1                                                                                                                                                                                                            |
 | Setup the Kube Prometheus Stack                 | This module is designed to manage the resources, providers, and Kubernetes Ingress configurations for the kube-prometheus-stack. It supports Helm chart version 62.3.1, which installs a comprehensive monitoring solution within the cluster. This monitoring stack includes Prometheus, Grafana, Alertmanager, Prometheus Operator, Kube-State-Metrics, Node Exporter, Prometheus Adapter, and several additional exporters.                                                                                                                                                                                                           |
 | Setup Microservices                      | This is the main module for managing all Microservice-related modules and includes the installation steps for services that need to be deployed on the Kubernetes cluster. In this example, we configure Microservices tools required for the application, such as Kind Cluster, Kind Ingress Controller, Kubernetes provider and namespace, Helm provider, and Keycloak, Kong API Gateway, etc. |
 
@@ -29,21 +30,33 @@ module "microservices" {
 
   kubernetes_namespace = "microservices"
 
-  keycloak_enable      = true
+  keycloak_enable      = false
   keycloak_domain_name = var.keycloak_domain_name
 
-  keycloak_admin_user       = "admin"
-  keycloak_admin_password   = "MyPassword2222@"
- 
+  keycloak_admin_user     = "admin"
+  keycloak_admin_password = "MyPassword2222@"
+
   keycloak_resources_requests_cpu    = "500m"
   keycloak_resources_requests_memory = "1024Mi"
   keycloak_resources_limit_cpu       = "500m"
   keycloak_resources_limit_memory    = "1024Mi"
-  keycloak_db_password="MyPassword2222@"
-  keycloak_db_admin_password="MyPassword2222@"
+  keycloak_db_user                   = "mykeycloak"
+  keycloak_db_name                   = "mykeycloakdb"
+  keycloak_db_password               = "MyPassword2222@"
+  keycloak_db_admin_password         = "MyPassword2222@"
   keycloak_autoscaling_min_replicas  = 1
   keycloak_autoscaling_max_replicas  = 1
   keycloak_persistence_size          = "8Gi"
+
+  kong_enable            = true
+  kong_admin_domain_name = var.kong_admin_domain_name
+  kong_proxy_domain_name = var.kong_proxy_domain_name
+
+  kong_db_user           = "mykong"
+  kong_db_name           = "mykongdb"
+  kong_db_password       = "MyPassword2222@"
+  kong_db_admin_password = "MyPassword2222@"
+  kong_persistence_size  = "5Gi"
 
   kube_prometheus_stack_enable = false
   prometheus_domain_name       = var.prometheus_domain_name
@@ -130,7 +143,6 @@ module "kubernetes_namespace" {
 }
 ```
 
-
 ## Usage of Keycloak Module
 
 We easily use to keycloak module to install the Keycloak inside Kubernetes namespace.
@@ -162,6 +174,36 @@ module "keycloak" {
   autoscaling_max_replicas  = var.keycloak_autoscaling_max_replicas
   persistence_size          = var.keycloak_persistence_size
   db_admin_password         = var.keycloak_db_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["keycloak_postgres_admin_user_password"].result : var.keycloak_db_admin_password
+
+  depends_on = [module.kubernetes_namespace]
+}
+```
+
+## Usage of Kong API Gateway Module
+
+We easily use to kong module to install the Kong API Gateway inside Kubernetes namespace.
+
+`main.tf` terraform script
+```shell
+#Instaling the kong
+module "kong" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kong?ref=dev"
+
+  kong_enable      = var.kong_enable
+  kubernetes_namespace = module.kubernetes_namespace.namespace
+
+  admin_service_port = var.kong_admin_service_port
+  admin_domain_name  = var.kong_admin_domain_name
+
+  proxy_domain_name  = var.kong_proxy_domain_name
+  proxy_service_port = var.kong_proxy_service_port
+
+  db_user                   = var.kong_db_user
+  db_password               = var.kong_db_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["kong_postgres_user_password"].result : var.kong_db_password
+  db_name                   = var.kong_db_name
+  db_port                   = var.kong_db_port
+  persistence_size          = var.kong_persistence_size
+  db_admin_password         = var.kong_db_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["kong_postgres_admin_user_password"].result : var.kong_db_admin_password
 
   depends_on = [module.kubernetes_namespace]
 }

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mes-item-service
+spec:
+  replicas: 4 # Number of pods to run
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2  # Max number of extra pods created during the update
+      maxUnavailable: 2 # Max number of unavailable pods during the update
+  selector:
+    matchLabels:
+      app: mes-item-service
+      type: service
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: mes-item-service
+        type: service
+        env: dev
+        version: 1.0.0.1-SNAPSHOT
+    spec:
+      containers:
+        - name: mes-item-service
+          image: developerhelperhub/mes-item-service:1.0.0.1-SNAPSHOT  # Docker image and Update to a new version of the image
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - mes-item-service
+              topologyKey: "topology.kubernetes.io/zone"

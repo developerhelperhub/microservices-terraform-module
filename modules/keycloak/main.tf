@@ -12,6 +12,11 @@ resource "helm_release" "keycloak_postgresql" {
   namespace = var.kubernetes_namespace
 
   set {
+    name  = "image.pullPolicy"
+    value = "IfNotPresent"
+  }
+
+  set {
     name  = "persistence.enabled"
     value = "true"
   }
@@ -54,6 +59,11 @@ resource "helm_release" "keycloak" {
 
   count     = var.keycloak_enable ? 1 : 0
   namespace = var.kubernetes_namespace
+
+  set {
+    name  = "image.pullPolicy"
+    value = "IfNotPresent"
+  }
 
   set {
     name  = "auth.adminUser"

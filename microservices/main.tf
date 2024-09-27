@@ -64,6 +64,30 @@ resource "random_password" "microservices_random_service_passwords" {
 }
 
 
+#Instaling the kong
+module "kong" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kong?ref=dev"
+
+  kong_enable          = var.kong_enable
+  kubernetes_namespace = module.kubernetes_namespace.namespace
+
+  admin_service_port = var.kong_admin_service_port
+  admin_domain_name  = var.kong_admin_domain_name
+
+  proxy_domain_name  = var.kong_proxy_domain_name
+  proxy_service_port = var.kong_proxy_service_port
+
+  db_user           = var.kong_db_user
+  db_password       = var.kong_db_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["kong_postgres_user_password"].result : var.kong_db_password
+  db_name           = var.kong_db_name
+  db_port           = var.kong_db_port
+  persistence_size  = var.kong_persistence_size
+  db_admin_password = var.kong_db_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["kong_postgres_admin_user_password"].result : var.kong_db_admin_password
+
+  depends_on = [module.kubernetes_namespace]
+}
+
+
 #Instaling the keycloak
 module "keycloak" {
   source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=dev"
@@ -92,6 +116,7 @@ module "keycloak" {
 
   depends_on = [module.kubernetes_namespace]
 }
+
 
 #Instaling the kube-prometheus-stack
 module "kube_prometheus_stack" {

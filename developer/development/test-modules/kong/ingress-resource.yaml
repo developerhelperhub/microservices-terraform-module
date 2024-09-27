@@ -1,0 +1,40 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mes-app-ingress
+  namespace: microservices
+  annotations:
+    # if we are testing without kong api gateway, we should use the following rewrite target pattern
+    # nginx.ingress.kubernetes.io/rewrite-target: /$2 
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    # - host: mes.app.com
+    #   http:
+    #     paths:
+    #       - path: /order-service(/|$)(.*)
+    #         pathType: ImplementationSpecific
+    #         backend:
+    #           service:
+    #             name: mes-order-service
+    #             port:
+    #               number: 8080
+    #       - path: /item-service(/|$)(.*)
+    #         pathType: ImplementationSpecific
+    #         backend:
+    #           service:
+    #             name: mes-item-service
+    #             port:
+    #               number: 8080
+    - host: api.gateway.mes.app.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: kong-kong-proxy
+                port:
+                  number: 80

@@ -1,0 +1,24 @@
+postgresql:
+  enabled: false
+ingressController:
+  installCRDs: false
+admin:
+  enabled: true
+  type: ClusterIP
+  tls:
+    enabled: false
+  http:
+    enabled: true
+    servicePort: 8001
+proxy:
+  enabled: true
+  type: ClusterIP
+
+env:
+  database:
+    KONG_DATABASE: "postgres"
+    KONG_PG_HOST: "your-postgres-host"
+    KONG_PG_PORT: "5432"
+    KONG_PG_USER: "kong"
+    KONG_PG_PASSWORD: "your-password"
+    KONG_PG_DATABASE: "kong"
