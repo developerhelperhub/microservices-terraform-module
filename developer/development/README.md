@@ -10,7 +10,7 @@ The following applications will be deployed locally in a Kubernetes cluster.
 **Root Main Terraform Script** `main.tf`
 ```shell
 module "microservices" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=v1.2.0"
 
   kind_cluster_name = var.kind_cluster_name
   kind_http_port    = 80
