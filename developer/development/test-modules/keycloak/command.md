@@ -11,7 +11,7 @@ kubectl describe nodes | grep -A10 "Non-terminated"
 
 **Login into postgresql**
 ```shell
-kubectl -n microservices exec -it pod/keycloak-postgresql-0 -- psql -U keycloak -d keycloakdb
+kubectl -n microservices exec -it pod/keycloak-postgresql-0 -- psql -U mykeycloak -d mykeycloakdb
 ```
 
 # login keyloack container and testing psql connection

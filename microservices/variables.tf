@@ -12,6 +12,8 @@ variable "microservices_service_passwords" {
     "keycloak_password" = { length = 16, special = true, upper = true, lower = true }
     "keycloak_postgres_user_password" = { length = 16, special = true, upper = true, lower = true }
     "keycloak_postgres_admin_user_password" = { length = 16, special = true, upper = true, lower = true }
+    "kong_postgres_user_password" = { length = 16, special = true, upper = true, lower = true }
+    "kong_postgres_admin_user_password" = { length = 16, special = true, upper = true, lower = true }
   }
 }
 
@@ -145,6 +147,75 @@ variable "keycloak_db_admin_password" {
   default = "AUTO_GENERATED"
 }
 
+
+# -------------- Kong ----------------
+
+variable "kong_enable" {
+  type        = bool
+  description = "Enable the installation"
+  default     = false
+}
+
+variable "kong_admin_service_port" {
+  type        = number
+  description = "Admin service port"
+  default     = 8001
+}
+
+variable "kong_admin_domain_name" {
+  type        = string
+  description = "Domain name of Admin API"
+  default = "localhost"
+}
+
+
+variable "kong_proxy_service_port" {
+  type        = number
+  description = "Proxy service port"
+  default     = 80
+}
+
+variable "kong_proxy_domain_name" {
+  type        = string
+  description = "Domain name of Proxy service"
+  default = "localhost"
+}
+
+variable "kong_db_user" {
+  type        = string
+  description = "Database username"
+  default     = "keycloak"
+}
+
+variable "kong_db_password" {
+  type        = string
+  description = "Database password"
+  default = "AUTO_GENERATED"
+}
+
+variable "kong_db_name" {
+  type        = string
+  description = "Database name"
+  default     = "keycloakdb"
+}
+
+variable "kong_db_port" {
+  type        = number
+  description = "Database port"
+  default     = 5432
+}
+
+variable "kong_persistence_size" {
+  type        = string
+  description = "Presistance size"
+  default     = "8Gi"
+}
+
+variable "kong_db_admin_password" {
+  type        = string
+  description = "Database admin password"
+  default = "AUTO_GENERATED"
+}
 
 # -------------- Kube Prometheus Stack ----------------
 

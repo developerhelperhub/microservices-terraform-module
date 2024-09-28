@@ -18,3 +18,4 @@ kubectl -n microservices exec -it pod/keycloak-postgresql-0 -- psql -U keycloak 
 * (Keycloak install on Kubernetes cluaster)[https://github.com/developerhelperhub/kuberentes-help/tree/main/kubenretes/tutorials/sections/0011]
 * (Helm Value)[https://github.com/bitnami/charts/blob/main/bitnami/keycloak/values.yaml]
 * (Helm Keycloak example)[https://analytics.axxonet.com/keycloak-deployment-on-kubernetes-with-helm-charts-using-an-external-postgresql-database/]
+* (Keycloak Kong Configuration)[https://docs.konghq.com/hub/kong-inc/openid-connect/how-to/authentication/authorization-code-flow/]

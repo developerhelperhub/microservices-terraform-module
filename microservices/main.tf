@@ -1,6 +1,6 @@
 #Installing the cluster in Docker
 module "kind_cluster" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=v1.2.0"
 
   name       = var.kind_cluster_name
   http_port  = 80
@@ -19,7 +19,7 @@ provider "kubernetes" {
 
 #Installing the ingress controller in the cluster, this ingress support by kind. This ingress controller will be different based on the clusters such as AWS, Azure, Etc.
 module "kind_ingress" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=v1.2.0"
 
   kube_endpoint               = module.kind_cluster.endpoint
   kube_client_key             = module.kind_cluster.client_key
@@ -41,7 +41,7 @@ provider "helm" {
 
 #Installing the namespace in the Kuberenetes cluster
 module "kubernetes_namespace" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=v1.2.0"
 
   namespace_name = var.kubernetes_namespace
 
@@ -50,7 +50,7 @@ module "kubernetes_namespace" {
 
 #Instaling common modules
 module "common" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/common?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/common?ref=v1.2.0"
 }
 
 #This resource is designed to generate a password across the system to enhance security. It can be used to create passwords for users, ensuring that each password includes special characters, uppercase and lowercase letters, and default numbers. You can also specify which special characters should be included in the password.
@@ -64,9 +64,33 @@ resource "random_password" "microservices_random_service_passwords" {
 }
 
 
+#Instaling the kong
+module "kong" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kong?ref=v1.2.0"
+
+  kong_enable          = var.kong_enable
+  kubernetes_namespace = module.kubernetes_namespace.namespace
+
+  admin_service_port = var.kong_admin_service_port
+  admin_domain_name  = var.kong_admin_domain_name
+
+  proxy_domain_name  = var.kong_proxy_domain_name
+  proxy_service_port = var.kong_proxy_service_port
+
+  db_user           = var.kong_db_user
+  db_password       = var.kong_db_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["kong_postgres_user_password"].result : var.kong_db_password
+  db_name           = var.kong_db_name
+  db_port           = var.kong_db_port
+  persistence_size  = var.kong_persistence_size
+  db_admin_password = var.kong_db_admin_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["kong_postgres_admin_user_password"].result : var.kong_db_admin_password
+
+  depends_on = [module.kubernetes_namespace]
+}
+
+
 #Instaling the keycloak
 module "keycloak" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=v1.2.0"
 
   keycloak_enable      = var.keycloak_enable
   kubernetes_namespace = module.kubernetes_namespace.namespace
@@ -93,9 +117,10 @@ module "keycloak" {
   depends_on = [module.kubernetes_namespace]
 }
 
+
 #Instaling the kube-prometheus-stack
 module "kube_prometheus_stack" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=v1.2.0"
 
   kube_prometheus_stack_enable = var.kube_prometheus_stack_enable
   kubernetes_namespace         = module.kubernetes_namespace.namespace

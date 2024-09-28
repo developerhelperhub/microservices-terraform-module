@@ -3,19 +3,23 @@ These Terraform scripts help set up Microservices applications necessary for app
 
 The following applications will be deployed locally in a Kubernetes cluster.
 * Keycloak
+* Kong API Gateway
 * Prometheus
 * Grafana
 
 **Root Main Terraform Script** `main.tf`
 ```shell
 module "microservices" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=v1.1.0"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=v1.2.0"
 
   kind_cluster_name = var.kind_cluster_name
   kind_http_port    = 80
   kind_https_port   = 443
 
   kubernetes_namespace = "microservices"
+
+  keycloak_enable      = false
+  keycloak_domain_name = var.keycloak_domain_name
 
   keycloak_admin_user     = "admin"
   keycloak_admin_password = "MyPassword2222@"
@@ -24,16 +28,28 @@ module "microservices" {
   keycloak_resources_requests_memory = "1024Mi"
   keycloak_resources_limit_cpu       = "500m"
   keycloak_resources_limit_memory    = "1024Mi"
-  keycloak_db_password="MyPassword2222@"
-  keycloak_db_admin_password="MyPassword2222@"
+  keycloak_db_user                   = "mykeycloak"
+  keycloak_db_name                   = "mykeycloakdb"
+  keycloak_db_password               = "MyPassword2222@"
+  keycloak_db_admin_password         = "MyPassword2222@"
   keycloak_autoscaling_min_replicas  = 1
   keycloak_autoscaling_max_replicas  = 1
   keycloak_persistence_size          = "8Gi"
 
+  kong_enable            = true
+  kong_admin_domain_name = var.kong_admin_domain_name
+  kong_proxy_domain_name = var.kong_proxy_domain_name
+
+  kong_db_user           = "mykong"
+  kong_db_name           = "mykongdb"
+  kong_db_password       = "MyPassword2222@"
+  kong_db_admin_password = "MyPassword2222@"
+  kong_persistence_size  = "5Gi"
+
   kube_prometheus_stack_enable = false
   prometheus_domain_name       = var.prometheus_domain_name
 
-  grafana_domain_name    = var.grafana_domain_name
+  grafana_domain_name = var.grafana_domain_name
 
   prometheus_alertmanager_enabled      = true
   prometheus_persistent_volume_enabled = true
@@ -72,14 +88,19 @@ Add our domain to the bottom of the `/etc/hosts` file on your local machine. Thi
 127.0.0.1       prometheus.microservices.com
 127.0.0.1       grafana.microservices.com
 127.0.0.1       keycloak.myapp.com
+127.0.0.1       admin.kong.myapp.com
+127.0.0.1       api.gateway.mes.app.com
 ```
 ## Applications 
 * Keycloak Username is "admin" and password "MyPassword2222@", URl "http://keycloak.myapp.com"
 * Prometheus URL “http://prometheus.microservices.com/”
 * Grafana Username is "admin", password will be available in the Terraform state file, URL “http://grafana.microservices.com/”
+* Kong Admin API URL http://admin.kong.myapp.com
+* Microservice e-commerces Site URL http://api.gateway.mes.app.com
 
 
 ## Reference
 * [Maintain Module Version](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00004)
 * [Setup Kubernetes Cluster on Docker with help of Kind](https://github.com/developerhelperhub/kuberentes-help/tree/main/terraform/sections/00001)
 * [Keycloak setup with helm](https://github.com/developerhelperhub/kuberentes-help/tree/main/kubenretes/tutorials/sections/0011)
+* [High Availability and Scalability deployment Microservices on Kubernetes cluster](https://dev.to/binoy_59380e698d318/high-availability-and-scalability-deployment-microservices-on-kubernetes-cluster-2p51)
