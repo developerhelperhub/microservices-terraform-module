@@ -67,6 +67,16 @@ resource "helm_release" "kong" {
   }
 
   set {
+    name  = "image.repository"
+    value = "developerhelperhub/kong-openid"
+  }
+
+  set {
+    name  = "image.tag"
+    value = "v1.0.0"
+  }
+
+  set {
     name  = "ingressController.installCRDs"
     value = false
   }
@@ -141,6 +151,11 @@ resource "helm_release" "kong" {
     name  = "env.pg_database"
     value = var.db_name
   }
+
+  # set {
+  #   name  = "env.plugins"
+  #   value = "kong-oidc"
+  # }
 
   # wait          = false
   # wait_for_jobs = false

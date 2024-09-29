@@ -85,5 +85,3 @@ NAME              CLASS    HOSTS                     ADDRESS     PORTS   AGE
 kong-ingress      <none>   admin.kong.myapp.com      localhost   80      3h2m
 mes-app-ingress   nginx    api.gateway.mes.app.com   localhost   80      147m
 ```
-
-api.gateway.mes.app.com
