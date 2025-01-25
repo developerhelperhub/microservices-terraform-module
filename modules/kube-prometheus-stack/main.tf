@@ -8,25 +8,24 @@ resource "helm_release" "kube_prometheus_stack" {
   count     = var.kube_prometheus_stack_enable ? 1 : 0
   namespace = var.kubernetes_namespace
 
-  set {
-    name  = "alertmanager.enabled"
-    value = var.alertmanager_enabled
-  }
-
-  set {
-    name  = "server.persistentVolume.enabled"
-    value = var.persistent_volume_enabled
-  }
-
-  set {
-    name  = "server.persistentVolume.size"
-    value = var.persistent_volume_size
-  }
-
-  set {
-    name  = "grafana.adminPassword"
-    value = var.grafana_admin_password
-  }
+  set = [
+    {
+      name  = "alertmanager.enabled"
+      value = var.alertmanager_enabled
+    },
+    {
+      name  = "server.persistentVolume.enabled"
+      value = var.persistent_volume_enabled
+    },
+    {
+      name  = "server.persistentVolume.size"
+      value = var.persistent_volume_size
+    },
+    {
+      name  = "grafana.adminPassword"
+      value = var.grafana_admin_password
+    }
+  ]
 
 
   timeout = 600
@@ -37,7 +36,7 @@ resource "helm_release" "kube_prometheus_stack" {
 # kube-prometheus-stack ingress configuration 
 resource "kubernetes_ingress_v1" "kube_prometheus_stack_ingress" {
 
-  count     = var.kube_prometheus_stack_enable ? 1 : 0
+  count = var.kube_prometheus_stack_enable ? 1 : 0
 
   metadata {
     name      = "kube-prometheus-stack-ingress"

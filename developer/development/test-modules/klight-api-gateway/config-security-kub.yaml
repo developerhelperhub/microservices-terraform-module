@@ -1,0 +1,12 @@
+mongodb:
+  username: klight-api-gateway
+  password: klight-api-gateway
+
+openid:
+  client_id: klight-api-gateway-openid-connect-authorize-code
+  client_secret: LXMpQ6HV5sQClXblnPteEbPt8Tie8iZk
+  session_secret: "jjjjOjjl*nnnPPPPP767"
+
+redis:
+  username: klight-redis-user
+  password: klight-redis-pass

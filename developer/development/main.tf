@@ -1,5 +1,5 @@
 module "microservices" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//microservices?ref=klight-api-gateway"
 
   kind_cluster_name = var.kind_cluster_name
   kind_http_port    = 80
@@ -7,7 +7,7 @@ module "microservices" {
 
   kubernetes_namespace = "microservices"
 
-  keycloak_enable      = false
+  keycloak_enable      = true
   keycloak_domain_name = var.keycloak_domain_name
 
   keycloak_admin_user     = "admin"
@@ -25,22 +25,42 @@ module "microservices" {
   keycloak_autoscaling_max_replicas  = 1
   keycloak_persistence_size          = "8Gi"
 
-  kong_enable            = true
-  kong_admin_domain_name = var.kong_admin_domain_name
-  kong_proxy_domain_name = var.kong_proxy_domain_name
+  klight_api_gateway_enable       = true
+  klight_api_gateway_domain       = var.klight_api_gateway_domain
+  klight_api_gateway_port         = 80
+  klight_api_gateway_admin_domain = var.klight_api_gateway_admin_domain
+  klight_api_gateway_admin_port   = 80
 
-  kong_db_user           = "mykong"
-  kong_db_name           = "mykongdb"
-  kong_db_password       = "MyPassword2222@"
-  kong_db_admin_password = "MyPassword2222@"
-  kong_persistence_size  = "5Gi"
+  klight_api_gateway_mongodb_root_user        = "root"
+  klight_api_gateway_mongodb_root_password    = "klight-api-gateway"
+  klight_api_gateway_mongodb_user             = "klight-api-gateway"
+  klight_api_gateway_mongodb_name             = "klight-api-gateway"
+  klight_api_gateway_mongodb_persistence_size = "1Gi"
+  klight_api_gateway_mongodb_password         = "klight-api-gateway"
 
-  kube_prometheus_stack_enable = false
-  prometheus_domain_name       = var.prometheus_domain_name
 
-  grafana_domain_name = var.grafana_domain_name
+  klight_api_gateway_redis_password         = "redis-mas-pass"
+  klight_api_gateway_redis_master_count     = 1
+  klight_api_gateway_redis_persistence_size = "1Gi"
+  klight_api_gateway_redis_replicas_min     = 1
+  klight_api_gateway_redis_replicas_max     = 1
 
-  prometheus_alertmanager_enabled      = true
-  prometheus_persistent_volume_enabled = true
-  prometheus_persistent_volume_size    = "5Gi"
+  # kong_enable            = false
+  # kong_admin_domain_name = var.kong_admin_domain_name
+  # kong_proxy_domain_name = var.kong_proxy_domain_name
+
+  # kong_db_user           = "mykong"
+  # kong_db_name           = "mykongdb"
+  # kong_db_password       = "MyPassword2222@"
+  # kong_db_admin_password = "MyPassword2222@"
+  # kong_persistence_size  = "5Gi"
+
+  # kube_prometheus_stack_enable = false
+  # prometheus_domain_name       = var.prometheus_domain_name
+
+  # grafana_domain_name = var.grafana_domain_name
+
+  # prometheus_alertmanager_enabled      = true
+  # prometheus_persistent_volume_enabled = true
+  # prometheus_persistent_volume_size    = "5Gi"
 }

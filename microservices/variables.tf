@@ -14,6 +14,9 @@ variable "microservices_service_passwords" {
     "keycloak_postgres_admin_user_password" = { length = 16, special = true, upper = true, lower = true }
     "kong_postgres_user_password" = { length = 16, special = true, upper = true, lower = true }
     "kong_postgres_admin_user_password" = { length = 16, special = true, upper = true, lower = true }
+    "klight_api_gateway_mongodb_root_password" = { length = 16, special = true, upper = true, lower = true }
+    "klight_api_gateway_mongodb_password" = { length = 16, special = true, upper = true, lower = true }
+    "klight_api_gateway_redis_password" = { length = 16, special = true, upper = true, lower = true }
   }
 }
 
@@ -215,6 +218,116 @@ variable "kong_db_admin_password" {
   type        = string
   description = "Database admin password"
   default = "AUTO_GENERATED"
+}
+
+# -------------- Klight API Gateway ----------------
+
+variable "klight_api_gateway_enable" {
+  type        = bool
+  description = "Klight API Gateway enable the installation"
+  default     = false
+}
+
+variable "klight_api_gateway_domain" {
+  type        = string
+  description = "Klight API Gateway domain name of Api Gateway"
+}
+
+variable "klight_api_gateway_port" {
+  type        = number
+  description = "Klight API Gateway port name of Api Gateway"
+}
+
+variable "klight_api_gateway_admin_domain" {
+  type        = string
+  description = "Klight API Gateway domain name of Admin Service"
+}
+
+variable "klight_api_gateway_admin_port" {
+  type        = number
+  description = "Klight API Gateway port name of Admin Service"
+}
+
+#------------------- Klight API Gateway - Mongo DB configuration ---------------------
+
+variable "klight_api_gateway_mongodb_root_password" {
+  type        = string
+  description = "Klight API Gateway mongodb database root password"
+  default = "AUTO_GENERATED"
+}
+
+variable "klight_api_gateway_mongodb_root_user" {
+  type        = string
+  description = "Klight API Gateway mongodb database root user"
+  default = "root"
+}
+
+variable "klight_api_gateway_mongodb_user" {
+  type        = string
+  description = "Klight API Gateway mongodb database username"
+  default     = "klight-api-gateway"
+}
+
+variable "klight_api_gateway_mongodb_password" {
+  type        = string
+  description = "Klight API Gateway mongodb database password"
+  default = "AUTO_GENERATED"
+}
+
+variable "klight_api_gateway_mongodb_name" {
+  type        = string
+  description = "Klight API Gateway mongodb database name"
+  default     = "klight-api-gateway"
+}
+
+variable "klight_api_gateway_mongodb_port" {
+  type        = number
+  description = "Klight API Gateway mongodb database port"
+  default     = 27017
+}
+
+variable "klight_api_gateway_mongodb_persistence_size" {
+  type        = string
+  description = "Klight API Gateway mongodb presistance size"
+  default     = "8Gi"
+}
+
+variable "klight_api_gateway_mongodb_persistence_storage_class" {
+  type        = string
+  description = "Klight API Gateway mongodb presistance storage class"
+  default = "standard"
+}
+
+#------------------- Klight API Gateway - Redis configuration ---------------------
+
+variable "klight_api_gateway_redis_password" {
+  type        = string
+  description = "Klight API Gateway Redis password"
+  default = "AUTO_GENERATED"
+}
+
+variable "klight_api_gateway_redis_master_count" {
+  type        = number
+  description = "Klight API Gateway Redis master count"
+  default = 1
+}
+
+variable "klight_api_gateway_redis_persistence_size" {
+  type        = string
+  description = "Klight API Gateway Redis presistance size"
+  default = "1Gi"
+}
+
+variable "klight_api_gateway_redis_replicas_min" {
+  type        = number
+  description = "Klight API Gateway Redis number min of replicas"
+  default = 1
+}
+
+variable "klight_api_gateway_redis_replicas_max" {
+  type        = number
+  description = "Klight API Gateway Redis number max of replicas"
+  default = 1
 }
 
 # -------------- Kube Prometheus Stack ----------------

@@ -34,3 +34,15 @@ variable "kong_proxy_domain_name" {
     default = "api.gateway.mes.app.com"
 }
 
+variable "klight_api_gateway_domain" {
+    type = string
+    description = "Klight API Gateway domain name"
+    default = "api.gateway.mes.app.com"
+}
+
+variable "klight_api_gateway_admin_domain" {
+    type = string
+    description = "Klight API admin domain name"
+    default = "admin.klightapigateway.mes.app.com"
+}
+

@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klight-api-gateway
+spec:
+  replicas: 1 # Number of pods to run
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1  # Max number of extra pods created during the update
+      maxUnavailable: 1 # Max number of unavailable pods during the update
+  selector:
+    matchLabels:
+      app: klight-api-gateway
+      type: service
+      env: dev
+  template:
+    metadata:
+      labels:
+        app: klight-api-gateway
+        type: service
+        env: dev
+        version: 1.0.0.1-SNAPSHOT
+    spec:
+      containers:
+        - name: klight-api-gateway
+          image: kublight/api-gateway  # Docker image and Update to a new version of the image
+          #imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: config-nginx-volume
+            mountPath: /usr/local/openresty/nginx/conf/nginx.conf  # ConfigMap will be mounted here
+            subPath: nginx.conf
+          - name: config-volume
+            mountPath: /usr/local/openresty/nginx/config.yaml  # ConfigMap will be mounted here
+            subPath: config.yaml
+          - name: secret-volume
+            mountPath: /usr/local/openresty/nginx/config-security.yaml  # Secret will be mounted here
+            subPath: config-security.yaml
+            readOnly: true
+          ports:
+            - containerPort: 8081
+      volumes:
+        - name: config-volume
+          configMap:
+            name: klight-api-gateway-config
+        - name: config-nginx-volume
+          configMap:
+            name: klight-api-gateway-nginx-config
+        - name: secret-volume
+          secret:
+            secretName: klight-api-gateway-secret
+      # affinity:
+      #   podAntiAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       - labelSelector:
+      #           matchExpressions:
+      #             - key: app
+      #               operator: In
+      #               values:
+      #                 - klight-api-gateway
+      #         topologyKey: "topology.kubernetes.io/zone"

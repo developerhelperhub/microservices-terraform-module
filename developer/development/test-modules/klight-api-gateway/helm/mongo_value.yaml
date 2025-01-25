@@ -1,0 +1,17 @@
+
+auth:
+  enabled: true
+  rootUser: root
+  rootPassword: myRootPassword
+  username: myUser
+  password: myPassword
+  database: myDatabase
+
+service:
+  ports:
+    mongodb: 27017
+
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClass: "standard"

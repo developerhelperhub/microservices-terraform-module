@@ -1,6 +1,6 @@
 #Installing the cluster in Docker
 module "kind_cluster" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind?ref=klight-api-gateway"
 
   name       = var.kind_cluster_name
   http_port  = 80
@@ -19,7 +19,7 @@ provider "kubernetes" {
 
 #Installing the ingress controller in the cluster, this ingress support by kind. This ingress controller will be different based on the clusters such as AWS, Azure, Etc.
 module "kind_ingress" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kind/ingress?ref=klight-api-gateway"
 
   kube_endpoint               = module.kind_cluster.endpoint
   kube_client_key             = module.kind_cluster.client_key
@@ -31,7 +31,7 @@ module "kind_ingress" {
 
 #Configuring the helm provider based on the cluster information
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.kind_cluster.endpoint
     client_certificate     = module.kind_cluster.client_certificate
     client_key             = module.kind_cluster.client_key
@@ -39,9 +39,15 @@ provider "helm" {
   }
 }
 
+#Instaling helm modules
+module "helm" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/helm?ref=klight-api-gateway"
+}
+
+
 #Installing the namespace in the Kuberenetes cluster
 module "kubernetes_namespace" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kubernetes/namespace?ref=klight-api-gateway"
 
   namespace_name = var.kubernetes_namespace
 
@@ -50,7 +56,7 @@ module "kubernetes_namespace" {
 
 #Instaling common modules
 module "common" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/common?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/common?ref=klight-api-gateway"
 }
 
 #This resource is designed to generate a password across the system to enhance security. It can be used to create passwords for users, ensuring that each password includes special characters, uppercase and lowercase letters, and default numbers. You can also specify which special characters should be included in the password.
@@ -66,7 +72,7 @@ resource "random_password" "microservices_random_service_passwords" {
 
 #Instaling the kong
 module "kong" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kong?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kong?ref=klight-api-gateway"
 
   kong_enable          = var.kong_enable
   kubernetes_namespace = module.kubernetes_namespace.namespace
@@ -88,9 +94,47 @@ module "kong" {
 }
 
 
+
+#Instaling the klight-api-gateway
+module "klight_api_gateway" {
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/klight-api-gateway?ref=klight-api-gateway"
+
+  klight_api_gateway_enable = var.klight_api_gateway_enable
+  kubernetes_namespace      = module.kubernetes_namespace.namespace
+
+  klight_api_gateway_domain = var.klight_api_gateway_domain
+  klight_api_gateway_port   = var.klight_api_gateway_port
+
+  klight_api_gateway_admin_domain = var.klight_api_gateway_admin_domain
+  klight_api_gateway_admin_port   = var.klight_api_gateway_admin_port
+
+  kube_endpoint               = module.kind_cluster.endpoint
+  kube_client_key             = module.kind_cluster.client_key
+  kube_client_certificate     = module.kind_cluster.client_certificate
+  kube_cluster_ca_certificate = module.kind_cluster.cluster_ca_certificate
+
+  mongodb_root_user                 = var.klight_api_gateway_mongodb_root_user
+  mongodb_root_password             = var.klight_api_gateway_mongodb_root_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["klight_api_gateway_mongodb_root_password"].result : var.klight_api_gateway_mongodb_root_password
+  mongodb_user                      = var.klight_api_gateway_mongodb_user
+  mongodb_name                      = var.klight_api_gateway_mongodb_name
+  mongodb_port                      = var.klight_api_gateway_mongodb_port
+  mongodb_persistence_size          = var.klight_api_gateway_mongodb_persistence_size
+  mongodb_persistence_storage_class = var.klight_api_gateway_mongodb_persistence_storage_class
+  mongodb_password                  = var.klight_api_gateway_mongodb_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["klight_api_gateway_mongodb_password"].result : var.klight_api_gateway_mongodb_password
+
+
+  redis_password         = var.klight_api_gateway_redis_password == "AUTO_GENERATED" ? random_password.microservices_random_service_passwords["klight_api_gateway_redis_password"].result : var.klight_api_gateway_redis_password
+  redis_master_count     = var.klight_api_gateway_redis_master_count
+  redis_persistence_size = var.klight_api_gateway_redis_persistence_size
+  redis_replicas_min     = var.klight_api_gateway_redis_replicas_min
+  redis_replicas_max     = var.klight_api_gateway_redis_replicas_max
+
+  depends_on = [module.kubernetes_namespace]
+}
+
 #Instaling the keycloak
 module "keycloak" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/keycloak?ref=klight-api-gateway"
 
   keycloak_enable      = var.keycloak_enable
   kubernetes_namespace = module.kubernetes_namespace.namespace
@@ -120,7 +164,7 @@ module "keycloak" {
 
 #Instaling the kube-prometheus-stack
 module "kube_prometheus_stack" {
-  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=dev"
+  source = "git::https://github.com/developerhelperhub/microservices-terraform-module.git//modules/kube-prometheus-stack?ref=klight-api-gateway"
 
   kube_prometheus_stack_enable = var.kube_prometheus_stack_enable
   kubernetes_namespace         = module.kubernetes_namespace.namespace

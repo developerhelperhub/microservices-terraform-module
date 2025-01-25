@@ -1,0 +1,23 @@
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: klight-api-gateway-ingress
+  namespace: microservices
+  annotations:
+    # if we are testing without kong api gateway, we should use the following rewrite target pattern
+    # nginx.ingress.kubernetes.io/rewrite-target: /$2 
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: api.gateway.mes.app.com
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: klight-api-gateway
+                port:
+                  number: 8081

@@ -11,40 +11,35 @@ resource "helm_release" "keycloak_postgresql" {
   count     = var.keycloak_enable ? 1 : 0
   namespace = var.kubernetes_namespace
 
-  set {
+  set = [{
     name  = "image.pullPolicy"
     value = "IfNotPresent"
-  }
-
-  set {
-    name  = "persistence.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "persistence.size"
-    value = var.persistence_size
-  }
-
-  set {
-    name  = "auth.database"
-    value = var.db_name
-  }
-
-  set {
-    name  = "auth.username"
-    value = var.db_user
-  }
-
-  set {
-    name  = "auth.postgresPassword"
-    value = var.db_admin_password
-  }
-
-  set {
-    name  = "auth.password"
-    value = var.db_password
-  }
+    },
+    {
+      name  = "persistence.enabled"
+      value = "true"
+    },
+    {
+      name  = "persistence.size"
+      value = var.persistence_size
+    },
+    {
+      name  = "auth.database"
+      value = var.db_name
+    },
+    {
+      name  = "auth.username"
+      value = var.db_user
+    },
+    {
+      name  = "auth.postgresPassword"
+      value = var.db_admin_password
+    },
+    {
+      name  = "auth.password"
+      value = var.db_password
+    }
+  ]
 
   wait          = false
   wait_for_jobs = false
@@ -60,91 +55,74 @@ resource "helm_release" "keycloak" {
   count     = var.keycloak_enable ? 1 : 0
   namespace = var.kubernetes_namespace
 
-  set {
+  set = [{
     name  = "image.pullPolicy"
     value = "IfNotPresent"
-  }
-
-  set {
-    name  = "auth.adminUser"
-    value = var.admin_user
-  }
-
-  set {
-    name  = "auth.adminPassword"
-    value = var.admin_password
-  }
-
-  set {
-    name  = "resources.requests.cpu"
-    value = var.resources_requests_cpu
-  }
-
-  set {
-    name  = "resources.requests.memory"
-    value = var.resources_requests_memory
-  }
-
-  set {
-    name  = "resources.limits.cpu"
-    value = var.resources_limit_cpu
-  }
-
-  set {
-    name  = "resources.limits.memory"
-    value = var.resources_limit_memory
-  }
-
-  set {
-    name  = "postgresql.enabled"
-    value = "false"
-  }
-
-  set {
-    name  = "networkPolicy.enabled"
-    value = "false"
-  }
-
-  # # External PostgreSQL connection details
-  set {
-    name  = "externalDatabase.host"
-    value = "keycloak-postgresql.${var.kubernetes_namespace}.svc.cluster.local"
-  }
-
-  set {
-    name  = "externalDatabase.user"
-    value = var.db_user
-  }
-
-  set {
-    name  = "externalDatabase.password"
-    value = var.db_password
-  }
-
-  set {
-    name  = "externalDatabase.database"
-    value = var.db_name
-  }
-
-  set {
-    name  = "externalDatabase.port"
-    value = var.db_port
-  }
-
-  set {
-    name  = "autoscaling.enabled"
-    value = false
-  }
-
-  set {
-    name  = "autoscaling.minReplicas"
-    value = var.autoscaling_min_replicas
-  }
-
-  set {
-    name  = "autoscaling.minReplicas"
-    value = var.autoscaling_max_replicas
-  }
+    },
+    {
+      name  = "auth.adminUser"
+      value = var.admin_user
+    },
+    {
+      name  = "auth.adminPassword"
+      value = var.admin_password
+    },
+    {
+      name  = "resources.requests.cpu"
+      value = var.resources_requests_cpu
+    },
+    {
+      name  = "resources.requests.memory"
+      value = var.resources_requests_memory
+    },
+    {
+      name  = "resources.limits.cpu"
+      value = var.resources_limit_cpu
+    },
+    {
+      name  = "resources.limits.memory"
+      value = var.resources_limit_memory
+    },
+    {
+      name  = "postgresql.enabled"
+      value = "false"
+    },
+    {
+      name  = "networkPolicy.enabled"
+      value = "false"
+    },
+    {
+      name  = "externalDatabase.host"
+      value = "keycloak-postgresql.${var.kubernetes_namespace}.svc.cluster.local"
+    },
+    {
+      name  = "externalDatabase.user"
+      value = var.db_user
+    },
+    {
+      name  = "externalDatabase.password"
+      value = var.db_password
+    },
+    {
+      name  = "externalDatabase.database"
+      value = var.db_name
+    },
+    {
+      name  = "externalDatabase.port"
+      value = var.db_port
+    },
+    {
+      name  = "autoscaling.enabled"
+      value = false
+    },
+    {
+      name  = "autoscaling.minReplicas"
+      value = var.autoscaling_min_replicas
+    },
+    {
+      name  = "autoscaling.minReplicas"
+      value = var.autoscaling_max_replicas
+  }]
 
   # wait          = false
   # wait_for_jobs = false
